@@ -47,16 +47,16 @@ class MenuBreadcrumbBuilder implements BreadcrumbBuilderInterface {
       $result->addCacheableDependency($url);
 
       $result_data[] = [
-        'title' => $menuParent->getTitle(),
         'url' => $url->getGeneratedUrl(),
+        'title' => $menuParent->getTitle(),
       ];
     }
 
     $url = $menuLink->getUrlObject()->toString(TRUE);
     $result->addCacheableDependency($url);
     $result_data[] = [
-      'title' => $menuLink->getTitle(),
       'url' => $url->getGeneratedUrl(),
+      'title' => $menuLink->getTitle(),
     ];
 
     $result->setResult($result_data);
