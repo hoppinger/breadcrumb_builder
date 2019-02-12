@@ -2,22 +2,9 @@
 
 namespace Drupal\path_breadcrumb_builder;
 
-use Drupal\Core\Breadcrumb\Breadcrumb;
-use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
-use Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\path_breadcrumb_builder\BreadcrumbResult;
 
-/**
- * Provides a breadcrumb manager.
- *
- * Can be assigned any number of BreadcrumbBuilderInterface objects by calling
- * the addBuilder() method. When build() is called it iterates over the objects
- * in priority order and uses the first one that returns TRUE from
- * BreadcrumbBuilderInterface::applies() to build the breadcrumbs.
- *
- * @see \Drupal\Core\DependencyInjection\Compiler\RegisterBreadcrumbBuilderPass
- */
 class BreadcrumbsManager implements ChainBreadcrumbBuilderInterface {
   /**
    * Holds arrays of breadcrumb builders, keyed by priority.
@@ -31,7 +18,7 @@ class BreadcrumbsManager implements ChainBreadcrumbBuilderInterface {
    *
    * Set to NULL if the array needs to be re-calculated.
    *
-   * @var \Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface[]|null
+   * @var \Drupal\path_breadcrumb_builder\BreadcrumbBuilderInterface[]|null
    */
   protected $sortedBuilders;
 

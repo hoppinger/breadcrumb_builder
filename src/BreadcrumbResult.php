@@ -16,6 +16,15 @@ class BreadcrumbResult extends BubbleableMetadata {
     return $this;
   }
 
+  public function addResultItem($item) {
+    $this->result[] = $item;
+  }
+
+  public function override(BreadcrumbResult $result) {
+    $this->result = $result->getResult();
+    $this->addCacheableDependency($result);
+  }
+
   public static function buildEmptyResult($x = '') {
     $result = new BreadcrumbResult();
     $result->addCacheContexts(['url.query_args']);

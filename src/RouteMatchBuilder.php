@@ -3,6 +3,7 @@
 namespace Drupal\path_breadcrumb_builder;
 
 use Drupal\Core\PathProcessor\InboundPathProcessorInterface;
+use Drupal\Core\Routing\RouteMatch;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -15,7 +16,7 @@ class RouteMatchBuilder {
     $this->router = $router;
   }
 
-  public function getRequestForPath($path, array $exclude) {
+  public function getRequestForPath($path, array $exclude = []) {
     if (!empty($exclude[$path])) {
       return NULL;
     }
@@ -45,5 +46,10 @@ class RouteMatchBuilder {
     catch (AccessDeniedHttpException $e) {
       return NULL;
     }
+  }
+
+  public function getRouteMatchForPath($path, array $exclude = []) {
+    $request = $this->getRequestForPath($path, $exclude);
+    return RouteMatch::createFromRequest($request);
   }
 }

@@ -5,7 +5,7 @@ services:
       - { name: service_collector, tag: path_breadcrumb_builder, call: addBuilder }
   path_breadcrumb_builder.path_builder:
     class: Drupal\path_breadcrumb_builder\PathBreadcrumbBuilder
-    arguments: ['@path_breadcrumb_builder.breadcrumb_manager', '@path_processor_manager', '@router', '@title_resolver', '@path.validator', '@path_breadcrumb_builder.routematch_builder']
+    arguments: ['@path_breadcrumb_builder.breadcrumb_manager', '@title_resolver', '@path.validator', '@path_breadcrumb_builder.route_match_builder']
     tags:
       - { name: path_breadcrumb_builder, priority: 0 }
   path_breadcrumb_builder.menu_builder:
@@ -13,6 +13,6 @@ services:
     arguments: ['@plugin.manager.menu.link']
     tags:
       - { name: path_breadcrumb_builder, priority: 100 }
-  path_breadcrumb_builder.routematch_builder:
+  path_breadcrumb_builder.route_match_builder:
     class: Drupal\path_breadcrumb_builder\RouteMatchBuilder
     arguments: ['@path_processor_manager', '@router']
