@@ -50,3 +50,30 @@ class ExampleBreadcrumbBuilder implements BreadcrumbBuilderInterface {
   }
 }
 ```
+
+In some cases we need more menu types than the specified 'main' menu, to contribute to the breadcrumb generation.
+
+Create a .php file in the module directory <directory>/src with the following content. Replace the `<target_identifier>` with the project-specific menu type that needs to be embedded into the API response (for example: `footer`)
+
+The <target_identifiers> can be Menu types. 
+
+The filename must be similar to the module name i.e., ModuleNameServiceProvider.php and must be placed in the src folder.
+
+```php
+use Drupal\Core\DependencyInjection\ContainerBuilder;
+use Drupal\Core\DependencyInjection\ServiceProviderBase;
+use Symfony\Component\DependencyInjection\Reference;
+
+class AlterServiceProvider extends ServiceProviderBase {
+  public function alter(ContainerBuilder $container) {
+    if ($container->hasParameter('path_breadcrumb_builder.target_identifiers')) {
+      $target_identifiers = $container->getParameter('path_breadcrumb_builder.target_identifiers');
+      
+      $target_identifiers[] = <target_identifier>; #e.g., footer
+  
+      $container->setParameter('path_breadcrumb_builder.target_identifiers', $target_identifiers);
+  }
+}
+```
+
+By default, main menu is already added as the target identifier.

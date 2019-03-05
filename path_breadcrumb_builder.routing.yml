@@ -4,6 +4,6 @@ breadcrumb:
     _controller: '\Drupal\path_breadcrumb_builder\Controller\BreadcrumbController::build' 
   methods: [GET]
   requirements:
-    _access: 'TRUE'
+    _role: api
   options:
     _auth: ['api_key_auth']

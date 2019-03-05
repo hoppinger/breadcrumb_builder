@@ -10,9 +10,13 @@ services:
       - { name: path_breadcrumb_builder, priority: 0 }
   path_breadcrumb_builder.menu_builder:
     class: Drupal\path_breadcrumb_builder\MenuBreadcrumbBuilder
-    arguments: ['@plugin.manager.menu.link']
+    arguments: ['@plugin.manager.menu.link', '%path_breadcrumb_builder.target_identifiers%']
     tags:
       - { name: path_breadcrumb_builder, priority: 100 }
   path_breadcrumb_builder.route_match_builder:
     class: Drupal\path_breadcrumb_builder\RouteMatchBuilder
     arguments: ['@path_processor_manager', '@router']
+
+parameters:
+  path_breadcrumb_builder.target_identifiers:
+    - main

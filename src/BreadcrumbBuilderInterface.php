@@ -2,6 +2,8 @@
 
 namespace Drupal\path_breadcrumb_builder;
 
+use Drupal\Core\Routing\RouteMatchInterface;
+
 interface BreadcrumbBuilderInterface {
   /**
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match

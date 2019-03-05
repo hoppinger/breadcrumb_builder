@@ -72,7 +72,7 @@ class PathBreadcrumbBuilder implements BreadcrumbBuilderInterface {
       $url = Url::fromRouteMatch($route_match)->toString(TRUE);
       $result->addCacheableDependency($url);
       
-      $result->addResultItem(
+      $result->addResultItem([
         'url' => $url->getGeneratedUrl(),
         'title' => $title,
       ]);

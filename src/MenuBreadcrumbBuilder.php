@@ -9,9 +9,14 @@ use Drupal\Core\Routing\RouteMatchInterface;
 
 class MenuBreadcrumbBuilder implements BreadcrumbBuilderInterface {
   protected $menuLinkManager;
+   /**
+   * @var string[]
+   */
+  protected $target_identifiers;
 
-  public function __construct(MenuLinkManagerInterface $menuLinkManager) {
+  public function __construct(MenuLinkManagerInterface $menuLinkManager, $target_identifiers) {
     $this->menuLinkManager = $menuLinkManager;
+    $this->target_identifiers = $target_identifiers;
   }
   
   /**
@@ -35,7 +40,14 @@ class MenuBreadcrumbBuilder implements BreadcrumbBuilderInterface {
    */
   protected function getMenuLinkForRouteMatch(RouteMatchInterface $route_match) {
     // Find the correct menu link: in a valid menu, with the lowest depth
-    $menuLinks = $this->menuLinkManager->loadLinksByRoute($route_match->getRouteName(), $route_match->getRawParameters()->all());
+
+    foreach($this->target_identifiers as $identifier) {
+      $menuLinks = $this->menuLinkManager->loadLinksByRoute($route_match->getRouteName(), $route_match->getRawParameters()->all(), $identifier);
+      if (!empty($menuLinks)) {
+        break 1;
+      }
+    }
+    
     return !empty($menuLinks) ? end($menuLinks) : null;
   }
   
@@ -58,7 +70,7 @@ class MenuBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     $url = $menuLink->getUrlObject()->toString(TRUE);
     $result->addCacheableDependency($url);
 
-    $result->addResultItem(
+    $result->addResultItem([
       'url' => $url->getGeneratedUrl(),
       'title' => $menuLink->getTitle(),
     ]);
