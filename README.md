@@ -5,7 +5,7 @@ Navigation can greatly enhance the way users find their way around. In terms of 
 ## Installation
 
 ```sh
-composer require hoppinger/path_breadcrumb_builder
+composer require hoppinger/breadcrumb_builder
 ```
 
 ## Usage
@@ -16,7 +16,7 @@ Create a custom service and define the service in the modulename.services.yml fi
   class: Drupal\module_name\ExampleBreadcrumbBuilder
     arguments: ['@plugin.manager.menu.link']
     tags:
-      - { name: path_breadcrumb_builder, priority: x }
+      - { name: breadcrumb_builder, priority: x }
 ```
 
 Create a file ExampleBreadcrumbBuilder.php inside the <module_name>/src folder and extend the Breadcrumb manager.
@@ -28,7 +28,7 @@ use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Menu\MenuLinkInterface;
 use Drupal\Core\Menu\MenuLinkManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\path_breadcrumb_builder\BreadcrumbResult;
+use Drupal\breadcrumb_builder\BreadcrumbResult;
 
 
 class ExampleBreadcrumbBuilder implements BreadcrumbBuilderInterface {
@@ -66,12 +66,12 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class AlterServiceProvider extends ServiceProviderBase {
   public function alter(ContainerBuilder $container) {
-    if ($container->hasParameter('path_breadcrumb_builder.target_identifiers')) {
-      $target_identifiers = $container->getParameter('path_breadcrumb_builder.target_identifiers');
+    if ($container->hasParameter('breadcrumb_builder.target_identifiers')) {
+      $target_identifiers = $container->getParameter('breadcrumb_builder.target_identifiers');
       
       $target_identifiers[] = <target_identifier>; #e.g., footer
   
-      $container->setParameter('path_breadcrumb_builder.target_identifiers', $target_identifiers);
+      $container->setParameter('breadcrumb_builder.target_identifiers', $target_identifiers);
   }
 }
 ```

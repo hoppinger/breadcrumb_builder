@@ -1,17 +1,17 @@
 {
-  "name": "hoppinger/path_breadcrumb_builder",
+  "name": "hoppinger/breadcrumb_builder",
   "description": "Drupal module to build breadcrumbs",
   "type": "drupal-module",
   "license": "GPL-2.0+",
   "minimum-stability": "dev",
-  "homepage": "https://github.com/hoppinger/path_breadcrumb_builder",
+  "homepage": "https://github.com/hoppinger/breadcrumb_builder",
   "authors": [
     {
       "name": "Rolf van de Krol",
       "role": "Maintainer"
     },
     {
-      "name": "ashwinimone",
+      "name": "Ashwini Mone",
       "role": "Maintainer"
     }
   ],

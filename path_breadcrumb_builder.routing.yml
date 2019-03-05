@@ -1,9 +1,0 @@
-breadcrumb:
-  path: '/api/breadcrumb'
-  defaults:
-    _controller: '\Drupal\path_breadcrumb_builder\Controller\BreadcrumbController::build' 
-  methods: [GET]
-  requirements:
-    _role: api
-  options:
-    _auth: ['api_key_auth']

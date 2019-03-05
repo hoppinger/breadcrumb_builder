@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\path_breadcrumb_builder;
+namespace Drupal\breadcrumb_builder;
 
 use Drupal\Core\PathProcessor\InboundPathProcessorInterface;
 use Drupal\Core\Routing\RouteMatch;

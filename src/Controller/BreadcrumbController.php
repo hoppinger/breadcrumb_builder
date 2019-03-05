@@ -1,12 +1,12 @@
 <?php
 
-namespace Drupal\path_breadcrumb_builder\Controller;
+namespace Drupal\breadcrumb_builder\Controller;
 
 use Drupal\Core\Cache\CacheableJsonResponse;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\path_breadcrumb_builder\BreadcrumbsManager;
-use Drupal\path_breadcrumb_builder\BreadcrumbResult;
-use Drupal\path_breadcrumb_builder\RouteMatchBuilder;
+use Drupal\breadcrumb_builder\BreadcrumbsManager;
+use Drupal\breadcrumb_builder\BreadcrumbResult;
+use Drupal\breadcrumb_builder\RouteMatchBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -23,8 +23,8 @@ class BreadcrumbController extends ControllerBase {
 
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('path_breadcrumb_builder.breadcrumb_manager'),
-      $container->get('path_breadcrumb_builder.route_match_builder')
+      $container->get('breadcrumb_builder.breadcrumb_manager'),
+      $container->get('breadcrumb_builder.route_match_builder')
     );
   }
   

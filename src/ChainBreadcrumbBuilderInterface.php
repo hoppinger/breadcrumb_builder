@@ -1,10 +1,10 @@
 <?php
 
-namespace Drupal\path_breadcrumb_builder;
+namespace Drupal\breadcrumb_builder;
 
 interface ChainBreadcrumbBuilderInterface extends BreadcrumbBuilderInterface {
   /**
-   * @param \Drupal\path_breadcrumb_builder\BreadcrumbBuilderInterface $builder
+   * @param \Drupal\breadcrumb_builder\BreadcrumbBuilderInterface $builder
    * @param int $priority
    */
   public function addBuilder(BreadcrumbBuilderInterface $builder, $priority);

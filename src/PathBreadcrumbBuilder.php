@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\path_breadcrumb_builder;
+namespace Drupal\breadcrumb_builder;
 
 use Drupal\Core\Controller\TitleResolverInterface;
 use Drupal\Core\Path\PathValidator;

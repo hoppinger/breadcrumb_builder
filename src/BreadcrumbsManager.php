@@ -1,9 +1,9 @@
 <?php
 
-namespace Drupal\path_breadcrumb_builder;
+namespace Drupal\breadcrumb_builder;
 
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\path_breadcrumb_builder\BreadcrumbResult;
+use Drupal\breadcrumb_builder\BreadcrumbResult;
 
 class BreadcrumbsManager implements ChainBreadcrumbBuilderInterface {
   /**
@@ -18,7 +18,7 @@ class BreadcrumbsManager implements ChainBreadcrumbBuilderInterface {
    *
    * Set to NULL if the array needs to be re-calculated.
    *
-   * @var \Drupal\path_breadcrumb_builder\BreadcrumbBuilderInterface[]|null
+   * @var \Drupal\breadcrumb_builder\BreadcrumbBuilderInterface[]|null
    */
   protected $sortedBuilders;
 
