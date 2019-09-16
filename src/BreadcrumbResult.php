@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\path_breadcrumb_builder;
+namespace Drupal\breadcrumb_builder;
 
 use Drupal\Core\Render\BubbleableMetadata;
 
@@ -14,6 +14,15 @@ class BreadcrumbResult extends BubbleableMetadata {
   public function setResult($result) {
     $this->result = $result;
     return $this;
+  }
+
+  public function addResultItem($item) {
+    $this->result[] = $item;
+  }
+
+  public function override(BreadcrumbResult $result) {
+    $this->result = $result->getResult();
+    $this->addCacheableDependency($result);
   }
 
   public static function buildEmptyResult($x = '') {

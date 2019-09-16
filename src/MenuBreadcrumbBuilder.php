@@ -1,66 +1,79 @@
 <?php
 
-namespace Drupal\path_breadcrumb_builder;
+namespace Drupal\breadcrumb_builder;
 
-use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Menu\MenuLinkInterface;
 use Drupal\Core\Menu\MenuLinkManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\path_breadcrumb_builder\BreadcrumbResult;
 
 
 class MenuBreadcrumbBuilder implements BreadcrumbBuilderInterface {
   protected $menuLinkManager;
+   /**
+   * @var string[]
+   */
+  protected $target_identifiers;
 
-  public function __construct(MenuLinkManagerInterface $menuLinkManager) {
+  public function __construct(MenuLinkManagerInterface $menuLinkManager, $target_identifiers) {
     $this->menuLinkManager = $menuLinkManager;
+    $this->target_identifiers = $target_identifiers;
   }
   
-   /**
+  /**
    * {@inheritdoc}
    */
   public function applies(RouteMatchInterface $route_match) {
-    $menuLinks = $this->menuLinkManager->loadLinksByRoute($route_match->getRouteName(), $route_match->getRawParameters()->all());
-    return !empty($menuLinks);
-  } 
+    return !empty($this->getMenuLinkForRouteMatch($route_match));
+  }
 
+  /**
+   * {@inheritdoc}
+   */
   public function build(RouteMatchInterface $route_match) {
-    //Menu links breadcrumb
-   
-    $menuLinks = $this->menuLinkManager->loadLinksByRoute($route_match->getRouteName(), $route_match->getRawParameters()->all());
-    if (!empty($menuLinks)) {
-      $menuLink = end($menuLinks);
-      return $this->buildForMenuLink($menuLink);
+    $menuLink = $this->getMenuLinkForRouteMatch($route_match);
+    return $menuLink ? $this->buildFromMenuLink($menuLink) : BreadcrumbResult::buildEmptyResult();
+  }
+
+  /**
+   * @param RouteMatchInterface $route_match
+   * @return MenuLinkInterface|null
+   */
+  protected function getMenuLinkForRouteMatch(RouteMatchInterface $route_match) {
+    // Find the correct menu link: in a valid menu, with the lowest depth
+
+    foreach($this->target_identifiers as $identifier) {
+      $menuLinks = $this->menuLinkManager->loadLinksByRoute($route_match->getRouteName(), $route_match->getRawParameters()->all(), $identifier);
+      if (!empty($menuLinks)) {
+        break 1;
+      }
     }
+    
+    return !empty($menuLinks) ? end($menuLinks) : null;
   }
   
-  protected function buildForMenuLink(MenuLinkInterface $menuLink) {
-
+  protected function buildFromMenuLink(MenuLinkInterface $menuLink) {
     $result = BreadcrumbResult::buildEmptyResult();
-    $result->addCacheableDependency($menuLink);
-    $result_data = $result->getResult();
+
     $menuParents = $this->getMenuLinkParents($menuLink);
     foreach ($menuParents as $menuParent) {
-      $result->addCacheableDependency($menuParent);
-
-      $url = $menuParent->getUrlObject()->toString(TRUE);
-      $result->addCacheableDependency($url);
-
-      $result_data[] = [
-        'url' => $url->getGeneratedUrl(),
-        'title' => $menuParent->getTitle(),
-      ];
+      $this->addMenuLinkToResult($menuParent, $result);
     }
+
+    $this->addMenuLinkToResult($menuLink, $result);
+
+    return $result;
+  }
+
+  protected function addMenuLinkToResult(MenuLinkInterface $menuLink, BreadcrumbResult $result) {
+    $result->addCacheableDependency($menuLink);
 
     $url = $menuLink->getUrlObject()->toString(TRUE);
     $result->addCacheableDependency($url);
-    $result_data[] = [
+
+    $result->addResultItem([
       'url' => $url->getGeneratedUrl(),
       'title' => $menuLink->getTitle(),
-    ];
-
-    $result->setResult($result_data);
-    return $result;
+    ]);
   }
 
   protected function getMenuLinkParents(MenuLinkInterface $link) {
@@ -69,10 +82,10 @@ class MenuBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     $current = $link;
 
     while ($parent_id = $current->getParent()) {
-      $new = $this->menuLinkManager->createInstance($parent_id);
-      if ($new) {
-        array_unshift($result, $new);
-        $current = $new;
+      $parent = $this->menuLinkManager->createInstance($parent_id);
+      if ($parent) {
+        array_unshift($result, $parent);
+        $current = $parent;
       } else {
         break;
       }

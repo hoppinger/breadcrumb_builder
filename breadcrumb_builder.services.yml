@@ -1,0 +1,22 @@
+services:
+  breadcrumb_builder.breadcrumb_manager:
+    class: Drupal\breadcrumb_builder\BreadcrumbsManager
+    tags:
+      - { name: service_collector, tag: breadcrumb_builder, call: addBuilder }
+  breadcrumb_builder.path_builder:
+    class: Drupal\breadcrumb_builder\PathBreadcrumbBuilder
+    arguments: ['@breadcrumb_builder.breadcrumb_manager', '@title_resolver', '@path.validator', '@breadcrumb_builder.route_match_builder']
+    tags:
+      - { name: breadcrumb_builder, priority: 0 }
+  breadcrumb_builder.menu_builder:
+    class: Drupal\breadcrumb_builder\MenuBreadcrumbBuilder
+    arguments: ['@plugin.manager.menu.link', '%breadcrumb_builder.target_identifiers%']
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }
+  breadcrumb_builder.route_match_builder:
+    class: Drupal\breadcrumb_builder\RouteMatchBuilder
+    arguments: ['@path_processor_manager', '@router']
+
+parameters:
+  breadcrumb_builder.target_identifiers:
+    - main

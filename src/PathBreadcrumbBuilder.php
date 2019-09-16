@@ -1,52 +1,37 @@
 <?php
 
-namespace Drupal\path_breadcrumb_builder;
+namespace Drupal\breadcrumb_builder;
 
-use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Controller\TitleResolverInterface;
-use Drupal\Core\ParamConverter\ParamNotConvertedException;
 use Drupal\Core\Path\PathValidator;
-use Drupal\Core\PathProcessor\InboundPathProcessorInterface;
 use Drupal\Core\Routing\RouteMatch;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
-use Drupal\path_breadcrumb_builder\BreadcrumbsManager;
-use Drupal\path_breadcrumb_builder\BreadcrumbResult;
-use Drupal\path_breadcrumb_builder\RouteMatchBuilder;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\Routing\Exception\MethodNotAllowedException;
-use Symfony\Component\Routing\Exception\ResourceNotFoundException;
-use Symfony\Component\Routing\RouterInterface;
 
 class PathBreadcrumbBuilder implements BreadcrumbBuilderInterface {
   protected $breadcrumbManager;
-  protected $pathProcessor;
-  protected $router;
-  protected $title_resolver;
+  protected $titleResolver;
   protected $pathValidator;
   protected $routeMatchBuilder;
 
-  public function __construct(BreadcrumbsManager $breadcrumbManager, InboundPathProcessorInterface $pathProcessor, RouterInterface $router, TitleResolverInterface $title_resolver, PathValidator $pathValidator, RouteMatchBuilder $routeMatchBuilder) {
-    $this->pathProcessor = $pathProcessor;
-    $this->router = $router;
-    $this->titleResolver = $title_resolver;
+  public function __construct(BreadcrumbsManager $breadcrumbManager, TitleResolverInterface $titleResolver, PathValidator $pathValidator, RouteMatchBuilder $routeMatchBuilder) {
+    $this->titleResolver = $titleResolver;
     $this->breadcrumbManager = $breadcrumbManager;
     $this->pathValidator = $pathValidator;
     $this->routeMatchBuilder = $routeMatchBuilder;
   }
   
-   /**
+  /**
    * {@inheritdoc}
    */
   public function applies(RouteMatchInterface $route_match) {
     return TRUE;
   } 
 
+  /**
+   * {@inheritdoc}
+   */
   public function build(RouteMatchInterface $route_match) {
-    return $this->buildPathBreadcrumb($route_match);
-  }
-
-  protected function buildPathBreadcrumb($route_match) {
     $result = BreadcrumbResult::buildEmptyResult();
 
     $url = Url::fromRouteMatch($route_match);
@@ -65,18 +50,15 @@ class PathBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     // @todo Find a better way to deal with /user.
     $exclude['/user'] = TRUE;
 
-
     $prefix = array_slice($path_elements, 0, -1);
     if (!empty($prefix)) {
       $prefix_path = '/' . implode('/', $prefix);
       $valid_path = $this->pathValidator->isValid($prefix_path);
       if ($valid_path) {
-        $prefix_route_request = $this->routeMatchBuilder->getRequestForPath($prefix_path, $exclude);
-        if ($prefix_route_request) {
-          $prefix_route_match = RouteMatch::createFromRequest($prefix_route_request);
+        $prefix_route_match = $this->routeMatchBuilder->getRouteMatchForPath($prefix_path, $exclude);
+        if ($prefix_route_match) {
           $prefix_result = $this->breadcrumbManager->build($prefix_route_match);
-          $result->setResult($prefix_result->getResult());
-          $result->addCacheableDependency($prefix_result);
+          $result->override($prefix_result);
         }
       }
     }
@@ -84,23 +66,29 @@ class PathBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     $route_request = $this->routeMatchBuilder->getRequestForPath('/' . implode('/', $path_elements), $exclude);
     if ($route_request) {
       $route_match = RouteMatch::createFromRequest($route_request);
+
+      $title = $this->getTitle($route_request, $route_match, end($path_elements));
       
-      $title = $this->titleResolver->getTitle($route_request, $route_match->getRouteObject());
-      if (!isset($title)) {
-        // Fallback to using the raw path component as the title if the
-        // route is missing a _title or _title_callback attribute.
-        $title = str_replace(['-', '_'], ' ', Unicode::ucfirst(end($path_elements)));
-      }
-      $url = Url::fromRouteMatch($route_match);
+      $url = Url::fromRouteMatch($route_match)->toString(TRUE);
+      $result->addCacheableDependency($url);
       
-      $links = $result->getResult();
-      $links[] = [
-        'url' => $url->toString(TRUE)->getGeneratedUrl(),
-        'title' => $title
-      ];
-      $result->setResult($links);
+      $result->addResultItem([
+        'url' => $url->getGeneratedUrl(),
+        'title' => $title,
+      ]);
     }
 
     return $result;
+  }
+
+  protected function getTitle($request, $route_match, $path_element) {
+    $title = $this->titleResolver->getTitle($request, $route_match->getRouteObject());
+    if (!isset($title)) {
+      // Fallback to using the raw path component as the title if the
+      // route is missing a _title or _title_callback attribute.
+      $title = str_replace(['-', '_'], ' ', Unicode::ucfirst($path_element));
+    }
+
+    return $title;
   }
 }
