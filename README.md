@@ -16,7 +16,7 @@ Create a custom service and define the service in the modulename.services.yml fi
   class: Drupal\module_name\ExampleBreadcrumbBuilder
     arguments: ['@plugin.manager.menu.link']
     tags:
-      - { name: breadcrumb_builder, priority: x }
+      - { name: custom_breadcrumb_builder, priority: x }
 ```
 
 Create a file ExampleBreadcrumbBuilder.php inside the <module_name>/src folder and extend the Breadcrumb manager.
@@ -24,7 +24,7 @@ Create a file ExampleBreadcrumbBuilder.php inside the <module_name>/src folder a
 
 namespace Drupal\<module_name>;
 
-use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
+use Drupal\breadcrumb_builder\BreadcrumbBuilderInterface;
 use Drupal\Core\Menu\MenuLinkInterface;
 use Drupal\Core\Menu\MenuLinkManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
