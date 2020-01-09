@@ -2,9 +2,13 @@
 
 namespace Drupal\breadcrumb_builder;
 
+use Drupal\Core\ParamConverter\ParamNotConvertedException;
 use Drupal\Core\PathProcessor\InboundPathProcessorInterface;
 use Drupal\Core\Routing\RouteMatch;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Routing\Exception\MethodNotAllowedException;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\RouterInterface;
 
 class RouteMatchBuilder {
@@ -29,6 +33,7 @@ class RouteMatchBuilder {
     // Find the system path by resolving aliases, language prefix, etc.
     $processed = $this->pathProcessor->processInbound($path, $request);
 
+
     // Attempt to match this path to provide a fully built request.
     try {
       $request->attributes->add($this->router->matchRequest($request));
@@ -50,6 +55,6 @@ class RouteMatchBuilder {
 
   public function getRouteMatchForPath($path, array $exclude = []) {
     $request = $this->getRequestForPath($path, $exclude);
-    return RouteMatch::createFromRequest($request);
+    return $request ? RouteMatch::createFromRequest($request) : NULL;
   }
 }

@@ -3,6 +3,7 @@
 namespace Drupal\breadcrumb_builder\Controller;
 
 use Drupal\Core\Cache\CacheableJsonResponse;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\breadcrumb_builder\BreadcrumbsManager;
 use Drupal\breadcrumb_builder\BreadcrumbResult;
@@ -27,15 +28,15 @@ class BreadcrumbController extends ControllerBase {
       $container->get('breadcrumb_builder.route_match_builder')
     );
   }
-  
+
   public function build(Request $request) {
     $path = $request->query->get('path');
-  
+
     $route_match = $this->routeMatchBuilder->getRouteMatchForPath($path);
-    $result = $this->breadcrumbManager->build($route_match);
-    
+    $result = $route_match ? $this->breadcrumbManager->build($route_match) : NULL;
+
     $response = CacheableJsonResponse::create($result->getResult());
-    $response->addCacheableDependency($result);  
+    $response->addCacheableDependency($result);
 
     return $response;
   }

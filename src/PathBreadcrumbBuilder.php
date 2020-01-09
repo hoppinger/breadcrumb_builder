@@ -20,13 +20,13 @@ class PathBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     $this->pathValidator = $pathValidator;
     $this->routeMatchBuilder = $routeMatchBuilder;
   }
-  
+
   /**
    * {@inheritdoc}
    */
   public function applies(RouteMatchInterface $route_match) {
     return TRUE;
-  } 
+  }
 
   /**
    * {@inheritdoc}
@@ -62,16 +62,15 @@ class PathBreadcrumbBuilder implements BreadcrumbBuilderInterface {
         }
       }
     }
-
     $route_request = $this->routeMatchBuilder->getRequestForPath('/' . implode('/', $path_elements), $exclude);
+
     if ($route_request) {
       $route_match = RouteMatch::createFromRequest($route_request);
 
       $title = $this->getTitle($route_request, $route_match, end($path_elements));
-      
+
       $url = Url::fromRouteMatch($route_match)->toString(TRUE);
       $result->addCacheableDependency($url);
-      
       $result->addResultItem([
         'url' => $url->getGeneratedUrl(),
         'title' => $title,
