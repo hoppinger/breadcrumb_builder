@@ -50,6 +50,13 @@ class PathBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     // @todo Find a better way to deal with /user.
     $exclude['/user'] = TRUE;
 
+    if (\Drupal::languageManager() && \Drupal::languageManager()->isMultilingual() && $languages = \Drupal::languageManager()->getLanguages()) {
+      $language_slugs = array_keys($languages);
+      foreach ($language_slugs as $lang) {
+        $exclude["/{$lang}"] = TRUE;
+      }
+    }
+
     $prefix = array_slice($path_elements, 0, -1);
     if (!empty($prefix)) {
       $prefix_path = '/' . implode('/', $prefix);
