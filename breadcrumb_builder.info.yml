@@ -2,6 +2,6 @@ name: 'Custom Breadcrumb Builder'
 type: module
 description: 'Generic breadcrumb overrides'
 core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^8 || ^9 || ^10
 package: 'Breadcrumbs'
 dependencies:
