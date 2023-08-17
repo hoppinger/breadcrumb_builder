@@ -35,7 +35,7 @@ class BreadcrumbController extends ControllerBase {
     $route_match = $this->routeMatchBuilder->getRouteMatchForPath($path);
     $result = $route_match ? $this->breadcrumbManager->build($route_match) : NULL;
 
-    $response = CacheableJsonResponse::create($result->getResult());
+    $response = new CacheableJsonResponse($result->getResult());
     $response->addCacheableDependency($result);
 
     return $response;
